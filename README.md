@@ -55,8 +55,9 @@ win.addEventListener('postlayout', async () => {
 win.add([lbl, view]);
 win.open();
 ```
-##### You can also specify sub-modules like so:
-```
+##### NOTE
+You can also specify sub-modules like so:
+```JS
 import _Titanium from './Titanium';
 
 const { UI } = _Titanium;
