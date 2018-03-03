@@ -1,11 +1,11 @@
 <p align="center">
-	<img src="https://github.com/appcelerator/ti.es6/raw/master/icon.png" height="128" width="128">
+	<img src="https://github.com/appcelerator/ti.es6/raw/master/icon.png" height="128 " width="358">
 	<h1 align="center">ti.es6</h1>
 	<h5 align="center">ES6 wrapper for the Titanium API</h6>
 </p>
 
-#### Usage
-##### tiapp.xml
+### Usage
+###### tiapp.xml
 ```XML
 ...
   <plugins>
@@ -16,7 +16,7 @@
 ...
 ```
 
-##### Example
+#### Example
 ```JS
 import { Window, Label, View, Animation, _2DMatrix } from './Titanium/UI';
 
@@ -55,7 +55,7 @@ win.addEventListener('postlayout', async () => {
 win.add([lbl, view]);
 win.open();
 ```
-###### You can also specify sub-modules like so:
+##### You can also specify sub-modules like so:
 ```
 import _Titanium from './Titanium';
 
