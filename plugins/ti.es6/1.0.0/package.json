@@ -1,0 +1,25 @@
+{
+  "name": "ti.es6",
+  "version": "1.0.0",
+  "description": "ES6 wrapper for the Titanium API",
+  "main": "hooks/ti.es6.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "es6",
+    "titanium"
+  ],
+  "author": "Gary Mathews",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "chalk": "^2.3.1",
+    "klaw-sync": "^3.0.2",
+    "@babel/core": "^7.0.0-beta.40",
+    "@babel/preset-env": "^7.0.0-beta.40",
+    "@babel/plugin-transform-async-to-generator": "^7.0.0-beta.40",
+    "rollup": "^0.56.3",
+    "rollup-plugin-resolver": "^1.0.0"
+  }
+}
