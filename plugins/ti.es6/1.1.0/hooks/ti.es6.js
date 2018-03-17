@@ -28,16 +28,14 @@ exports.init = (logger, config, cli, appc) => {
 	});
 
 	cli.on('build.pre.build', async (builder, callback) => {
-
 		const moduleDir = path.resolve(__dirname, '..'),
 			  resourcesDir = path.join(builder.projectDir, 'Resources'),
-			  buildResourcesDir = builder.xcodeAppDir || path.join(builder.buildDir, 'bin', 'assets', 'Resources'),
+			  buildResourcesDir = builder.xcodeAppDir || builder.buildTargetAssetsDir || path.join(builder.buildDir, 'bin', 'assets', 'Resources'),
 			  appJs = path.join(buildResourcesDir, 'app.js'),
 			  titaniumDir = path.join(buildResourcesDir, 'Titanium'),
 			  titaniumJs = path.join(buildResourcesDir, 'Titanium.js');
 
 		// copy Titanium wrapper to project
-		// TODO: validate files don't already exist
 		log(`including Titanium ES6 classes...`);
 		if (!fs.pathExistsSync(titaniumDir)) {
 			fs.copySync(path.join(moduleDir, 'Titanium'), titaniumDir);
@@ -52,13 +50,29 @@ exports.init = (logger, config, cli, appc) => {
 
 		// include '@babel/polyfill' into project
 		log(`installing @babel/polyfill...`);
-		const child = spawnSync('npm', ['install', '@babel/polyfill', '-p'], {
-			cwd: buildResourcesDir,
-			env: { PATH: process.env.PATH }
-		});
-		if (child.error) {
+		let child = null;
+		if (builder.platformName === 'windows') {
+			child = spawnSync(
+				process.env.comspec || 'cmd.exe',
+				[ '/S', '/C', '"', 'npm', 'install', '@babel/polyfill', '-p','"' ],
+				{
+					cwd: buildResourcesDir,
+					windowsVerbatimArguments: true
+				}
+			);
+		} else {
+			child = spawnSync(
+				'npm',
+				['install', '@babel/polyfill', '-p'],
+				{
+					cwd: buildResourcesDir,
+					env: { PATH: process.env.PATH }
+				}
+			);
+		}
+		if (!child || child.error) {
 			console.error('error: could not install polyfill');
-			console.error(child.stderr.toString());
+			process.exit(-1);
 		}
 
 		// transpile
@@ -71,10 +85,15 @@ exports.init = (logger, config, cli, appc) => {
 			targets = {};
 
 		// specify javascript engine target
+		// android
 		if (builder.chromeVersion) {
 			targets.chrome = builder.chromeVersion;
+
+		// ios
 		} else if (builder.minSupportedIosSdk) {
 			targets.ios = builder.minSupportedIosSdk;
+
+		// windows
 		} else {
 			targets.safari = '10';
 		}
@@ -89,7 +108,7 @@ exports.init = (logger, config, cli, appc) => {
 
 		// rollup is required to workaround circular references unsupported by JavascriptCore
 		// this should only run on 'app.js', bundling all dependencies into one file
-		if (builder.platformName === 'iphone') {
+		if (builder.platformName === 'iphone' || builder.platformName === 'windows') {
 			let contents = fs.readFileSync(appJs).toString(),
 				input = {
 					[appJs]: `import '@babel/polyfill';${contents}`
