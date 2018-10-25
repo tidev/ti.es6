@@ -178,5 +178,5 @@ exports.init = (logger, config, cli, appc) => {
 }
 
 function log (message) {
-	console.log(chalk.blue(`[TI.ES6] ${message}`));
+	console.log(chalk.blue(`[Ti.ES6] ${message}`));
 }
